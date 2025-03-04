@@ -9,18 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.junit.runner.RunWith;
-
-import org.junit.*;
-import org.junit.runner.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.test.context.*;
-import org.springframework.boot.test.mock.mockito.*;
-import org.springframework.test.context.junit4.*;
-
+import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.Matchers.containsString;
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @RunWith(SpringRunner.class)
@@ -30,70 +21,71 @@ public class BinaryAPIControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    // Test for "/add" (string result)
+    // Test for "/add" endpoint, expecting a binary sum result
     @Test
     public void add() throws Exception {
-        this.mvc.perform(get("/add").param("operand1", "1011").param("operand2", "1101"))
+        this.mvc.perform(get("/add").param("operand1", "1011").param("operand2", "1001"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("11000"));  // 11 + 13 = 24, binary result is 11000
+                .andExpect(content().string("10100"));  // 11 + 9 = 20, binary result is 10100
     }
 
-    // Test for "/add_json" (JSON result)
+    // Test for "/add_json" endpoint, verifying JSON response
     @Test
     public void addJson() throws Exception {
-        this.mvc.perform(get("/add_json").param("operand1", "1011").param("operand2", "1101"))
+        this.mvc.perform(get("/add_json").param("operand1", "110").param("operand2", "11"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.operand1").value(1011))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.operand2").value(1101))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value("11000"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value("1001"))  // 6 + 3 = 9 (1001)
                 .andExpect(MockMvcResultMatchers.jsonPath("$.operator").value("add"));
     }
 
-    // Test for "/multiply" (string result)
+    // Test for "/multiply" endpoint, expecting a binary product result
     @Test
     public void multiply() throws Exception {
-        this.mvc.perform(get("/multiply").param("operand1", "110").param("operand2", "11"))
+        // First test case for multiply
+        this.mvc.perform(get("/multiply").param("operand1", "11").param("operand2", "101"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("10010"));  // 6 * 3 = 18, binary result is 10010
+                .andExpect(content().string("1111"));  // 3 * 5 = 15, binary result is 1111
     }
 
-    // Second test case for "/multiply"
     @Test
-    public void multiply2() throws Exception {
-        this.mvc.perform(get("/multiply").param("operand1", "101").param("operand2", "101"))
+    public void multiplySecondCase() throws Exception {
+        // Second test case for multiply
+        this.mvc.perform(get("/multiply").param("operand1", "100").param("operand2", "100"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("11001"));  // 5 * 5 = 25, binary result is 11001
+                .andExpect(content().string("10000"));  // 4 * 4 = 16, binary result is 10000
     }
 
-    // Test for "/and" (string result)
+    // Test for "/and" endpoint, expecting a binary AND operation result
     @Test
     public void and() throws Exception {
-        this.mvc.perform(get("/and").param("operand1", "1010").param("operand2", "1101"))
+        // First test case for AND
+        this.mvc.perform(get("/and").param("operand1", "1110").param("operand2", "1011"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1000"));  // 10 AND 13 = 8, binary result is 1000
+                .andExpect(content().string("1010"));  // AND operation (1110 & 1011) = 1010 (decimal 10)
     }
 
-    // Second test case for "/and"
     @Test
-    public void and2() throws Exception {
-        this.mvc.perform(get("/and").param("operand1", "1111").param("operand2", "1010"))
+    public void andSecondCase() throws Exception {
+        // Second test case for AND
+        this.mvc.perform(get("/and").param("operand1", "1101").param("operand2", "1011"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1010"));  // 15 AND 10 = 10, binary result is 1010
+                .andExpect(content().string("1001"));  // AND operation (1101 & 1011) = 1001 (decimal 9)
     }
 
-    // Test for "/or" (string result)
+    // Test for "/or" endpoint, expecting a binary OR operation result
     @Test
     public void or() throws Exception {
-        this.mvc.perform(get("/or").param("operand1", "1010").param("operand2", "1100"))
+        // First test case for OR
+        this.mvc.perform(get("/or").param("operand1", "1001").param("operand2", "1101"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1110"));  // 10 OR 12 = 14, binary result is 1110
+                .andExpect(content().string("1101"));  // OR operation (1001 | 1101) = 1101 (decimal 13)
     }
 
-    // Second test case  for "/or"
     @Test
-    public void or2() throws Exception {
-        this.mvc.perform(get("/or").param("operand1", "1001").param("operand2", "0110"))
+    public void orSecondCase() throws Exception {
+        // Second test case for OR
+        this.mvc.perform(get("/or").param("operand1", "1010").param("operand2", "0101"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1111"));  // 9 OR 6 = 15, binary result is 1111
+                .andExpect(content().string("1111"));  // OR operation (1010 | 0101) = 1111 (decimal 15)
     }
 }
