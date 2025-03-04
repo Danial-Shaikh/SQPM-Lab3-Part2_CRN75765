@@ -1,4 +1,5 @@
 package com.ontariotechu.sofe3980U;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -70,10 +71,11 @@ public class BinaryControllerTest {
 
     /**
      * Test multiplication of two binary numbers.
-     * 11 * 110 = 10010
+     * 11 * 110 = 10110
      */
     @Test
     public void postMultiplyParameter() throws Exception {
+        // First test case for multiplication
         this.mvc.perform(post("/").param("operand1", "11")
                         .param("operator", "*")
                         .param("operand2", "110"))
@@ -83,12 +85,25 @@ public class BinaryControllerTest {
                 .andExpect(model().attribute("operand1", "11"));
     }
 
+    @Test
+    public void postMultiplySecondCase() throws Exception {
+        // Second test case for multiplication
+        this.mvc.perform(post("/").param("operand1", "100")
+                        .param("operator", "*")
+                        .param("operand2", "100"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("result"))
+                .andExpect(model().attribute("result", "10000"))  // 4 * 4 = 16, binary result is 10000
+                .andExpect(model().attribute("operand1", "100"));
+    }
+
     /**
      * Test bitwise AND operation.
      * 1110 & 1011 = 1010
      */
     @Test
     public void postAndParameter() throws Exception {
+        // First test case for AND
         this.mvc.perform(post("/").param("operand1", "1110")
                         .param("operator", "&")
                         .param("operand2", "1011"))
@@ -98,12 +113,25 @@ public class BinaryControllerTest {
                 .andExpect(model().attribute("operand1", "1110"));
     }
 
+    @Test
+    public void postAndSecondCase() throws Exception {
+        // Second test case for AND
+        this.mvc.perform(post("/").param("operand1", "1101")
+                        .param("operator", "&")
+                        .param("operand2", "1011"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("result"))
+                .andExpect(model().attribute("result", "1001"))  // AND operation (1101 & 1011) = 1001
+                .andExpect(model().attribute("operand1", "1101"));
+    }
+
     /**
      * Test bitwise OR operation.
      * 1001 | 1100 = 1101
      */
     @Test
     public void postOrParameter() throws Exception {
+        // First test case for OR
         this.mvc.perform(post("/").param("operand1", "1001")
                         .param("operator", "|")
                         .param("operand2", "1100"))
@@ -111,5 +139,17 @@ public class BinaryControllerTest {
                 .andExpect(view().name("result"))
                 .andExpect(model().attribute("result", "1101"))
                 .andExpect(model().attribute("operand1", "1001"));
+    }
+
+    @Test
+    public void postOrSecondCase() throws Exception {
+        // Second test case for OR
+        this.mvc.perform(post("/").param("operand1", "1010")
+                        .param("operator", "|")
+                        .param("operand2", "0101"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("result"))
+                .andExpect(model().attribute("result", "1111"))  // OR operation (1010 | 0101) = 1111
+                .andExpect(model().attribute("operand1", "1010"));
     }
 }
